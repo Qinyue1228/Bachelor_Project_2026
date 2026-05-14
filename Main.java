@@ -58,16 +58,25 @@ class AssocTree {
         }
     }
 
+    public void print_tree(Node node) {
+        print_tree_recursive(node, 0);
+    }
+
+    private void print_tree_recursive(Node node, int level) {
+        if (node == null) return;
+
+        print_tree_recursive(node.right, level + 1);
+        for (int i = 0; i < level; i++) {
+            System.out.print("    ");
+        }
+        System.out.println("[" + node.value.x + ", " + node.value.y + "]");
+        print_tree_recursive(node.left, level + 1);
+    }
+
     private void print_BST(Node node) {
         if (node == null) return;
-        print_BST(node.right);
-        if (node.left == null && node.right == null) {
-            System.out.println(":[" + node.value.x + ", " + node.value.y + "]");
-            result_num++;
-        }
-        print_BST(node.left);
-//        result_num += node.node_num;
-//        System.out.println("the number of nodes in the subtree is " + node.node_num);
+        result_num += node.node_num;
+//        System.out.println("the number of nodes in the subtree " + node.value.x + " is " + node.node_num);
     }
 
     private Node find_split_node(Node node, int y_1, int y_2) {
@@ -103,7 +112,7 @@ class AssocTree {
                     node = node.right;
                 }
             }
-            // Check whether the lead must be reported
+            // Check whether the leaf must be reported
             if (node.value.y >= y_1 && node.value.y <= y_2) {
                 System.out.println("[" + node.value.x + ", " + node.value.y + "]");
                 result_num++;
@@ -151,29 +160,25 @@ class BST {
         root = list_to_BST(list);
     }
 
-//    public void print_tree() {
-//        print_tree_recursive(root, 0);
-//    }
-//
-//    private void print_tree_recursive(Node node, int level) {
-//        if (node == null) return;
-//
-//        print_tree_recursive(node.right, level + 1);
-//        for (int i = 0; i < level; i++) {
-//            System.out.print("    ");
-//        }
-//        System.out.println(node.value);
-//        print_tree_recursive(node.left, level + 1);
-//    }
+    public void print_tree() {
+        print_tree_recursive(root, 0);
+    }
+
+    private void print_tree_recursive(Node node, int level) {
+        if (node == null) return;
+
+        print_tree_recursive(node.right, level + 1);
+        for (int i = 0; i < level; i++) {
+            System.out.print("    ");
+        }
+        System.out.println(node.value);
+        print_tree_recursive(node.left, level + 1);
+    }
 
     private void print_BST(Node node, int y_1, int y_2) {
         if (node == null) return;
-        print_BST(node.right, y_1, y_2);
-        if (node.left == null && node.right == null) {
-            node.tree.range_query(y_1, y_2);
-            result_num += node.tree.result_num;
-        }
-        print_BST(node.left, y_1, y_2);
+        node.tree.range_query(y_1, y_2);
+        result_num += node.tree.result_num;
     }
 
     private Node list_to_BST(List<Point> list) {
@@ -260,23 +265,27 @@ class PointsGenerator {
     public ArrayList<Point> getPoints(int num) {
         Random rand = new Random();
         ArrayList<Point> list = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
+        while (list.size() < num) {
             int num_1 = rand.nextInt(10);
             int num_2 = rand.nextInt(10);
-//            int num_3 = rand.nextInt(10);
-//            int num_4 = rand.nextInt(10);
-            int x = num_1 * 10 + num_2 * 1;
-//                    + num_3 * 10 + num_4;
+            int num_3 = rand.nextInt(10);
+            int num_4 = rand.nextInt(10);
+            int x = num_1 * 1000 + num_2 * 100 + num_3 * 10 + num_4;
 
             num_1 = rand.nextInt(10);
             num_2 = rand.nextInt(10);
-//            num_3 = rand.nextInt(10);
-//            num_4 = rand.nextInt(10);
-            int y = num_1 * 10 + num_2 * 1;
-//                    + num_3 * 10 + num_4;
+            num_3 = rand.nextInt(10);
+            num_4 = rand.nextInt(10);
+            int y = num_1 * 1000 + num_2 * 100 + num_3 * 10 + num_4;
 
-
-            list.add(new Point(x,y));
+            boolean repeated = false;
+            for (int j = 0; j < list.size(); j++) {
+                if (list.get(j).x == x || list.get(j).y == y) {
+                    repeated = true;
+                    break;
+                }
+            }
+            if (!repeated) list.add(new Point(x,y));
         }
         return list;
     }
@@ -291,10 +300,9 @@ class PointsGenerator {
         Random rand = new Random();
         int num_1 = rand.nextInt(10);
         int num_2 = rand.nextInt(10);
-//        int num_3 = rand.nextInt(10);
-//        int num_4 = rand.nextInt(10);
-        return num_1 * 10 + num_2 * 1;
-//                + num_3 * 10 + num_4;
+        int num_3 = rand.nextInt(10);
+        int num_4 = rand.nextInt(10);
+        return num_1 * 1000 + num_2 * 100 + num_3 * 10 + num_4;
     }
 
     public int getRange_2(int range_1) {
@@ -302,10 +310,9 @@ class PointsGenerator {
         while (true) {
             int num_1 = rand.nextInt(10);
             int num_2 = rand.nextInt(10);
-//            int num_3 = rand.nextInt(10);
-//            int num_4 = rand.nextInt(10);
-            int range_2 = num_1 * 10 + num_2 * 1;
-//                    + num_3 * 10 + num_4;
+            int num_3 = rand.nextInt(10);
+            int num_4 = rand.nextInt(10);
+            int range_2 = num_1 * 1000 + num_2 * 100 + num_3 * 10 + num_4;
             if (range_2 >= range_1) return range_2;
         }
     }
@@ -313,8 +320,13 @@ class PointsGenerator {
 
 public class Main {
     public static void main(String[] args) {
+        ArrayList<Point> test = new ArrayList<>();
+        for (int i = 0; i <= 30; i++) {
+            test.add(new Point(i, i));
+        }
+
         // Prepare the dataset
-        int size = 100;
+        int size = 2000;
         PointsGenerator PG = new PointsGenerator();
         ArrayList<Point> list = PG.getPoints(size);
 
@@ -329,7 +341,7 @@ public class Main {
         double min_time = 0;
         double points_num = 0.0;
 
-        int count = 2;
+        int count = 1000;
         for (int i = 0; i < count; i++) {
             int x_1 = PG.getRange_1();
             int x_2 = PG.getRange_2(x_1);
