@@ -1,17 +1,19 @@
 import matplotlib.pyplot as plt
+import math
 
 sizes = [100, 200, 500, 1000, 2000]
-avg_times = [237.514, 327.459, 507.433, 695.547, 739.917]
-avg_times_deletion = [203.71, 506.694, 884.039, 1140.999, 1415.129]
-avg_times_insertion = [396.697, 674.805, 995.633, 1172.748, 1295.993]
+avg_times = [256.032, 338.67, 529.539, 598.587, 730.651]
+avg_times_deletion = [148.912, 264.798, 625.014, 870.548, 1201.97]
+avg_times_insertion = [325.275, 490.391, 768.604, 968.194, 1052.899]
 
-plt.plot(sizes, avg_times, linestyle='-', marker='o', color='green')
-plt.plot(sizes, avg_times_deletion, linestyle='-', marker='o', color='blue')
-plt.plot(sizes, avg_times_insertion, linestyle='-', marker='o', color='red')
+# plt.plot(sizes, avg_times, linestyle='-', marker='o', color='green', label="Range query")
+plt.plot(sizes, avg_times_deletion, linestyle='-', marker='o', color='blue', label="Deletion")
+plt.plot(sizes, avg_times_insertion, linestyle='-', marker='o', color='red', label="Insertion")
 
 plt.xlabel("The Number of Points (n)")
-plt.ylabel("Average Search Time (ns)")
+plt.ylabel("Running Time (ns)")
 
 plt.grid(True)
 
+plt.legend()
 plt.show()

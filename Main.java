@@ -1,15 +1,3 @@
-// ENGINE
-// 1. with x&y range, get multiple points and store them in the data structure(what data structure?)
-// 1. generate 4 random numbers
-// 2. combine them as a floating number
-// 2. get 4 floating numbers(x1, x2, y1, y2), executing searching algorithm
-
-// DATA STRUCTURE
-// 1. 1-D range tree
-// 1. sort and store the x value of points in an array
-// 2. build a tree based on the array(each node stores the value of the rightmost
-// leaf and the number of node it contains)
-
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
@@ -146,11 +134,13 @@ class AssocTree {
         while (curr_node.node_num != 1) {
             if (target_y <= curr_node.value.y) {
                 prev_node = curr_node;
+                if (curr_node.left == null) break;
                 curr_node = curr_node.left;
                 left_right_flag = 0;
             }
             else {
                 prev_node = curr_node;
+                if (curr_node.right == null) break;
                 curr_node = curr_node.right;
                 left_right_flag = 1;
             }
@@ -332,6 +322,11 @@ class BST {
         root = list_to_BST(list);
     }
 
+    public int height(Node node) {
+        if (node.node_num == 1) return 0;
+        return 1 + Math.max(height(node.left), height(node.right));
+    }
+
     public void print_tree() {
         print_tree_recursive(root, 0);
     }
@@ -440,11 +435,13 @@ class BST {
         while (curr_node.node_num != 1) {
             if (target_x <= curr_node.value) {
                 prev_node = curr_node;
+                if (curr_node.left == null) break;
                 curr_node = curr_node.left;
                 left_right_flag = 0;
             }
             else {
                 prev_node = curr_node;
+                if (curr_node.right == null) break;
                 curr_node = curr_node.right;
                 left_right_flag = 1;
             }
@@ -733,10 +730,12 @@ class PointsGenerator {
 public class Main {
     public static void main(String[] args) {
 
-        int[] dataset_size = {3000, 100, 200, 500, 1000, 2000};
+        int[] dataset_size = {1500, 100, 200, 500, 1000, 2000};
+        int[] iteration_num = {150, 10, 20, 50, 100, 150};
 
-        for (int n : dataset_size) {
-            if (n != 3000) {
+        for (int i = 0; i < dataset_size.length; i++) {
+            int n = dataset_size[i];
+            if (n != 1500) {
                 System.out.println("======================> Dataset size: " + n + " <======================");
             }
 
@@ -758,7 +757,9 @@ public class Main {
             double points_num = 0.0;
 
             int count = 1000;
-            for (int i = 0; i < count; i++) {
+
+            //Range counting
+            for (int j = 0; j < count; j++) {
                 int x_1 = PG.getRange_1();
                 int x_2 = PG.getRange_2(x_1);
                 int y_1 = PG.getRange_1();
@@ -775,11 +776,11 @@ public class Main {
                 points_num += tree.result_num;
 
                 if (ns > max_time) max_time = ns;
-                if (i == 0) min_time = ns;
+                if (j == 0) min_time = ns;
                 else if (ns < min_time) min_time = ns;
             }
 
-            if (n != 3000) {
+            if (n != 1500) {
                 System.out.println("===> Range query:");
                 System.out.println("Average search time: " + total_time / count);
                 System.out.println("Maximum search time: " + max_time);
@@ -791,72 +792,73 @@ public class Main {
             total_time = 0;
             max_time = -1;
             min_time = 0;
-            int deleted_num = 0;
 
-            for (int i = 0; i < count; i++) {
+            for (int j = 0; j < count; j++) {
                 tree = new BST(list_sorted_x);
-                Random rand = new Random();
-                int pos = rand.nextInt(n);
+                long duration = 0;
 
-                int x = list_sorted_x.get(pos).x;
-                int y = list_sorted_x.get(pos).y;
+                for (int k = 0; k < iteration_num[i]; k++) {
+                    Random rand = new Random();
+                    int pos = rand.nextInt(n);
 
-                long start = System.nanoTime();
-                tree.delete_point(x, y);
+                    int x = list_sorted_x.get(pos).x;
+                    int y = list_sorted_x.get(pos).y;
 
-                long end = System.nanoTime();
-                long duration = end - start;
-                double ns = duration;
+                    long start = System.nanoTime();
+                    tree.delete_point(x, y);
+
+                    long end = System.nanoTime();
+                    duration += end - start;
+                }
+
+                double ns = duration / iteration_num[i];
                 total_time += ns;
 
-                if (tree.is_deleted) deleted_num++;
-
                 if (ns > max_time) max_time = ns;
-                if (i == 0) min_time = ns;
+                if (j == 0) min_time = ns;
                 else if (ns < min_time) min_time = ns;
             }
 
-            if (n != 3000) {
+            if (n != 1500) {
                 System.out.println("===> Deletion:");
                 System.out.println("Average search time: " + total_time / count);
                 System.out.println("Maximum search time: " + max_time);
                 System.out.println("Minimum search time: " + min_time);
-                System.out.println("The number of points that are successfully deleted: " + deleted_num);
             }
 
             // Insertion
             total_time = 0;
             max_time = -1;
             min_time = 0;
-            int inserted_num = 0;
 
-            for (int i = 0; i < count; i++) {
+            for (int j = 0; j < count; j++) {
                 tree = new BST(list_sorted_x);
+                long duration = 0;
 
-                int x = PG.getRange_1();
-                int y = PG.getRange_1();
+                for (int k = 0; k < iteration_num[i]; k++) {
+                    int x = PG.getRange_1();
+                    int y = PG.getRange_1();
 
-                long start = System.nanoTime();
-                tree.insert_point(x, y);
+                    long start = System.nanoTime();
+                    tree.insert_point(x, y);
 
-                long end = System.nanoTime();
-                long duration = end - start;
-                double ns = duration;
+                    long end = System.nanoTime();
+                    duration += end - start;
+                }
+
+                double ns = duration / iteration_num[i];
                 total_time += ns;
 
-                if (tree.is_inserted) inserted_num++;
-
                 if (ns > max_time) max_time = ns;
-                if (i == 0) min_time = ns;
+                if (j == 0) min_time = ns;
                 else if (ns < min_time) min_time = ns;
             }
 
-            if (n != 3000) {
+            if (n != 1500) {
                 System.out.println("===> Insertion:");
                 System.out.println("Average search time: " + total_time / count);
                 System.out.println("Maximum search time: " + max_time);
                 System.out.println("Minimum search time: " + min_time);
-                System.out.println("The number of points that are successfully inserted: " + inserted_num);
             }
         }
     }
