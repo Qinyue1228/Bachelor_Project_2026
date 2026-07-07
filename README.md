@@ -1,1 +1,2 @@
 # Static and Dynamic Orthogonal Range Counting: An Experimental Study
+The repository includes the implementations of the static and dynamic orthogonal range counting algorithms as well as the experimental code used for performance evaluation.
